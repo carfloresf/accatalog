@@ -134,6 +134,28 @@ REFERENCES public.material_type (material_type_id) MATCH FULL
 ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
 
+-- object: public.costume_cost | type: TABLE --
+-- DROP TABLE IF EXISTS public.costume_cost CASCADE;
+CREATE TABLE public.costume_cost(
+  costume_cost_id bigserial NOT NULL,
+	costume_id bigint NOT NULL,
+	actual_cost float,
+	calculated_cost float,
+	range_cost int,
+	"created_at" timestamp with time zone NOT NULL DEFAULT current_timestamp,
+	"active" boolean NOT NULL DEFAULT 'true',
+	CONSTRAINT costume_cost_pk PRIMARY KEY (costume_cost_id)
+);
+-- ddl-end --
+ALTER TABLE public.costume_cost OWNER TO acadmin;
+
+-- object: costume_fk | type: CONSTRAINT --
+-- ALTER TABLE public.costume_cost DROP CONSTRAINT IF EXISTS costume_cost_fk CASCADE;
+ALTER TABLE public.costume_cost ADD CONSTRAINT costume_cost_fk FOREIGN KEY (costume_id)
+REFERENCES public.costume (costume_id) MATCH FULL
+ON DELETE RESTRICT ON UPDATE CASCADE;
+-- ddl-end --
+
 -- object: public.accesory | type: TABLE --
 -- DROP TABLE IF EXISTS public.accesory CASCADE;
 CREATE TABLE public.accesory(

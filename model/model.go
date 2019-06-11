@@ -19,6 +19,7 @@ type Costume struct {
 	CostumeID       int                       `json:"costumeID,omitempty"`
 	Name            string                    `json:"name,omitempty"`
 	Color           string                    `json:"color,omitempty"`
+	ActualCost      float64                   `json:"actualCost,omitempty"`
 	CostumeCode     string                    `json:"costumeCode,omitempty"`
 	Genre           string                    `json:"genre,omitempty"`
 	CreatedAt       time.Time                 `json:"createdAt,omitempty"`
