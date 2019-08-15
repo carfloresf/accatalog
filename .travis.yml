@@ -5,6 +5,9 @@ go:
 branches:
   only:
     - master
+env:
+  global:
+    - GO111MODULE=on
 install:
   - echo "Install will do nothing"
 script:
