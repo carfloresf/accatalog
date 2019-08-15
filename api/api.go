@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/buaazp/fasthttprouter"
+	// postgres import
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 	"github.com/valyala/fasthttp"

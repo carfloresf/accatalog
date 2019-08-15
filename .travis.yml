@@ -8,6 +8,6 @@ branches:
 install:
   - echo "Install will do nothing"
 script:
-  - GOOS=linux GOARCH=amd64 make rpm test lint publish-rpm
+  - GOOS=linux GOARCH=amd64 make test
 after_success: reports-publisher
 after_failure: reports-publisher
