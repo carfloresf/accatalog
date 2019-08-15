@@ -30,7 +30,7 @@ type Costume struct {
 // CostumeMaterialRelation struct
 type CostumeMaterialRelation struct {
 	CostumeID  int `json:"costumeID,omitempty"`
-	MaterialID int `json:"material,omitempty"`
+	MaterialID int `json:"materialID,omitempty"`
 	Quantity   int `json:"quantity,omitempty"`
 }
 

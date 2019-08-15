@@ -1,0 +1,13 @@
+os: linux
+language: go
+go:
+  - '1.12.8'
+branches:
+  only:
+    - master
+install:
+  - echo "Install will do nothing"
+script:
+  - GOOS=linux GOARCH=amd64 make rpm test lint publish-rpm
+after_success: reports-publisher
+after_failure: reports-publisher

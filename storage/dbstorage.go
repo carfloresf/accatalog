@@ -39,6 +39,7 @@ func (ds *DatabaseStorage) InsertMaterial(m model.Material) (int, error) {
 			SELECT CAST($1 AS VARCHAR), $2, $3, $4, $5
 			WHERE NOT EXISTS(SELECT material_id FROM material WHERE description = $1) RETURNING material_id`,
 		m.Description, m.Cost, m.Measure, m.MaterialType.MaterialTypeID, m.BrandID).Scan(&m.MaterialID)
+	fmt.Printf("%+v", m)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			return 0, fmt.Errorf("didn't insert data, it already exists")
@@ -54,7 +55,7 @@ func (ds *DatabaseStorage) InsertCostumeMaterialRelation(cm model.CostumeMateria
 	var rows int
 	err := ds.db.QueryRow(
 		`INSERT INTO costume_material_relation(costume_id, material_id, quantity) 
-		VALUES ($1,$2,$3) 
+		VALUES ($1,$2,$3) ON CONFLICT ON CONSTRAINT costume_material_relation_pk DO UPDATE SET quantity = $3
 		RETURNING 1`,
 		&cm.CostumeID, &cm.MaterialID, &cm.Quantity).Scan(&rows)
 	if err != nil {

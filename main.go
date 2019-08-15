@@ -6,12 +6,14 @@ import (
 	"syscall"
 
 	log "github.com/sirupsen/logrus"
+
+	"github.com/hellerox/AcCatalog/api"
 )
 
 var exit = make(chan os.Signal, 1)
 
 func main() {
-	a := App{}
+	a := api.App{}
 
 	port := os.Getenv("PORT")
 	if port == "" {
