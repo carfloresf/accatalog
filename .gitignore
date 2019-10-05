@@ -4,3 +4,5 @@ Gopkg.lock
 main
 tmp/
 .directory/
+
+.DS_Store

@@ -83,7 +83,6 @@ func (ds *DatabaseStorage) InsertMaterialType(m model.MaterialType) (int, error)
 
 // GetCostume for ACCAT
 func (ds *DatabaseStorage) GetCostume(cID int) (c model.Costume, err error) {
-
 	var cc model.Category
 	if err = ds.db.QueryRow(
 		"SELECT c.costume_id, c.name, c.color, c.costume_code, c.genre, c.created_at, c.costume_category_id, cc.costume_category_name,cc.created_at FROM Costume c JOIN costume_category cc USING (costume_category_id) where costume_id=$1", cID).
@@ -98,7 +97,6 @@ func (ds *DatabaseStorage) GetCostume(cID int) (c model.Costume, err error) {
 
 // GetAllCostumes for ACCAT
 func (ds *DatabaseStorage) GetAllCostumes() (cs []model.Costume, err error) {
-
 	rows, err := ds.db.Query(
 		"SELECT c.costume_id FROM Costume c")
 	if err != nil {
