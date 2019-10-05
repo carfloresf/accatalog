@@ -22,7 +22,6 @@ type Service struct {
 
 // GetFullCostume full costume
 func (s *Service) GetFullCostume(cID int) (c model.Costume, err error) {
-
 	costume, err := s.Storage.GetCostume(cID)
 	if err != nil {
 		log.Printf("error getting costume: %s", err.Error())
@@ -52,7 +51,6 @@ func (s *Service) GetFullCostume(cID int) (c model.Costume, err error) {
 
 // GetAllCostumes all the costumes
 func (s *Service) GetAllCostumes() (cs []model.Costume, err error) {
-
 	costumes, err := s.Storage.GetAllCostumes()
 	if err != nil {
 		log.Printf("error getting costume: %s", err.Error())

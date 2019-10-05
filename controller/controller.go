@@ -23,7 +23,6 @@ type Controller struct {
 
 // InitializeRoutes route initialize
 func (c *Controller) InitializeRoutes() {
-
 	c.Router.HandleMethodNotAllowed = true
 	c.Router.NotFound = c.notFound
 	c.Router.MethodNotAllowed = c.methodNotAllowed
@@ -137,7 +136,6 @@ func (c *Controller) getCostume(ctx *fasthttp.RequestCtx) {
 }
 
 func (c *Controller) getAllCostumes(ctx *fasthttp.RequestCtx) {
-
 	cs, err := c.Service.GetAllCostumes()
 	if err != nil {
 		respond(ctx, fasthttp.StatusInternalServerError, fmt.Sprintf(`{"error":"%s"}`, err))

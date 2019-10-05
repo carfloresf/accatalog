@@ -1,13 +1,10 @@
 os: linux
 language: go
 go:
-  - '1.12.8'
+  - '1.13.1'
 branches:
   only:
     - master
-env:
-  global:
-    - GO111MODULE=on
 install:
   - echo "Install will do nothing"
 script:
