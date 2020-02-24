@@ -14,12 +14,13 @@ type DatabaseStorage struct {
 // Storage executes functions on storage resources
 type Storage interface {
 	InsertCostume(c model.Costume) (int, error)
-	InsertMaterial(m model.Material) (int, error)
+	InsertMaterial(m model.Material) (int64, error)
 	InsertCostumeMaterialRelation(cm model.CostumeMaterialRelation) (err error)
 	InsertMaterialType(cm model.MaterialType) (int, error)
 	GetCostume(cID int) (c *model.Costume, err error)
 	GetAllCostumes() (cs []model.Costume, err error)
 	GetMaterial(mID int) (c model.Material, err error)
+	GetAllMaterials() (ms []model.Material, err error)
 	GetCostumeMaterial(cID int) (cm []model.CostumeMaterialRelation, err error)
 	GetPermission(apikey string) (permission string, user string, err error)
 }
