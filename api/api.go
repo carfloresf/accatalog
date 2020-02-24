@@ -23,7 +23,9 @@ type App struct {
 // Initialize sets up the database connection and routes for the app
 func (a *App) Initialize(connectionString, appPort string) (err error) {
 	log.SetLevel(log.DebugLevel)
+
 	var controller controller.Controller
+
 	controller.Storage = storage.NewStorage(connectionString)
 	controller.Service.Storage = controller.Storage
 	controller.Router = fasthttprouter.New()
@@ -46,8 +48,10 @@ func (a *App) Initialize(connectionString, appPort string) (err error) {
 	}
 
 	log.Infof("starting server on port %s", appPort)
+
 	go func() {
 		err := server.Serve(a.listener)
+
 		if err != nil {
 			log.Fatalf("error starting the server: %s", err)
 		}
@@ -59,10 +63,14 @@ func (a *App) Initialize(connectionString, appPort string) (err error) {
 // Stop the API server.
 func (a *App) Stop() error {
 	var err error
+
 	if a.listener != nil {
 		log.Info("stopping the API")
+
 		err = a.listener.Close()
+
 		time.Sleep(time.Second)
+
 		a.listener = nil
 	}
 

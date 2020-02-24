@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
@@ -15,6 +16,7 @@ func connect(connectionString string) *sqlx.DB {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
 	return db
 }
 
@@ -29,6 +31,7 @@ func (ds *DatabaseStorage) InsertCostume(c model.Costume) (int, error) {
 		log.Errorf("error while inserting costumes: %s", err.Error())
 		return 0, err
 	}
+
 	return c.CostumeID, nil
 }
 
@@ -39,14 +42,17 @@ func (ds *DatabaseStorage) InsertMaterial(m model.Material) (int, error) {
 			SELECT CAST($1 AS VARCHAR), $2, $3, $4, $5
 			WHERE NOT EXISTS(SELECT material_id FROM material WHERE description = $1) RETURNING material_id`,
 		m.Description, m.Cost, m.Measure, m.MaterialType.MaterialTypeID, m.BrandID).Scan(&m.MaterialID)
-	fmt.Printf("%+v", m)
+
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			return 0, fmt.Errorf("didn't insert data, it already exists")
 		}
+
 		log.Errorf("error while inserting material: %s", err.Error())
+
 		return 0, err
 	}
+
 	return m.MaterialID, nil
 }
 
@@ -58,10 +64,12 @@ func (ds *DatabaseStorage) InsertCostumeMaterialRelation(cm model.CostumeMateria
 		VALUES ($1,$2,$3) ON CONFLICT ON CONSTRAINT costume_material_relation_pk DO UPDATE SET quantity = $3
 		RETURNING 1`,
 		&cm.CostumeID, &cm.MaterialID, &cm.Quantity).Scan(&rows)
+
 	if err != nil {
 		log.Errorf("error while inserting costume material: %s", err.Error())
 		return fmt.Errorf("error inserting Costume Material")
 	}
+
 	return nil
 }
 
@@ -74,25 +82,39 @@ func (ds *DatabaseStorage) InsertMaterialType(m model.MaterialType) (int, error)
 			WHERE name = $1) 
 			RETURNING material_type_id`,
 		m.Name).Scan(&m.MaterialTypeID)
+
 	if err != nil {
 		log.Errorf("error while inserting material type: %s", err.Error())
 		return 0, err
 	}
+
 	return m.MaterialTypeID, nil
 }
 
 // GetCostume for ACCAT
-func (ds *DatabaseStorage) GetCostume(cID int) (c model.Costume, err error) {
+func (ds *DatabaseStorage) GetCostume(cID int) (co *model.Costume, err error) {
 	var cc model.Category
+
+	var c model.Costume
+
 	if err = ds.db.QueryRow(
-		"SELECT c.costume_id, c.name, c.color, c.costume_code, c.genre, c.created_at, c.costume_category_id, cc.costume_category_name,cc.created_at FROM Costume c JOIN costume_category cc USING (costume_category_id) where costume_id=$1", cID).
+		"SELECT c.costume_id, c.name, c.color, c.costume_code, c.genre, c.created_at, c.costume_category_id, cc.costume_category_name,cc.created_at "+
+			"FROM Costume c JOIN costume_category cc USING (costume_category_id) where costume_id=$1", cID).
 		Scan(&c.CostumeID, &c.Name, &c.Color, &c.CostumeCode, &c.Genre, &c.CreatedAt, &cc.CategoryID, &cc.Name, &cc.CreatedAt); err != nil {
-		log.Errorf("error while gettings costumes: %s", err.Error())
-		return c, fmt.Errorf("error while getting costumes ")
+		log.Errorf("error while getting costumes: %s", err.Error())
+
+		if strings.Contains(err.Error(), "no rows in result set") {
+			return nil, fmt.Errorf("empty result")
+		}
+
+		return &c, fmt.Errorf("error while getting costumes")
 	}
+
 	c.CostumeCategory = cc
+
 	log.Infof("costume found %+v", c)
-	return c, err
+
+	return &c, err
 }
 
 // GetAllCostumes for ACCAT
@@ -103,6 +125,7 @@ func (ds *DatabaseStorage) GetAllCostumes() (cs []model.Costume, err error) {
 		log.Errorf("error while gettings costumes: %s", err.Error())
 		return cs, fmt.Errorf("error while getting costumes ")
 	}
+
 	defer func() {
 		err = rows.Close()
 		if err != nil {
@@ -112,13 +135,17 @@ func (ds *DatabaseStorage) GetAllCostumes() (cs []model.Costume, err error) {
 
 	for rows.Next() {
 		var c model.Costume
+
 		err = rows.Scan(
 			&c.CostumeID)
+
 		if err != nil {
 			return cs, err
 		}
+
 		cs = append(cs, c)
 	}
+
 	return cs, err
 }
 
@@ -129,21 +156,26 @@ func (ds *DatabaseStorage) GetCostumeMaterial(cID int) (cm []model.CostumeMateri
 	if errq != nil {
 		log.Fatal(err)
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
 		var costumeMaterial model.CostumeMaterialRelation
 		err := rows.Scan(&costumeMaterial.CostumeID, &costumeMaterial.MaterialID, &costumeMaterial.Quantity)
+
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		cm = append(cm, costumeMaterial)
 	}
+
 	if err := rows.Err(); err != nil {
 		log.Fatal(err)
 	}
 
 	log.Infof("costume found %+v", cm)
+
 	return cm, err
 }
 
@@ -154,7 +186,9 @@ func (ds *DatabaseStorage) GetPermission(apikey string) (permission string, user
 		log.Errorf("error getting permissions: %s", err.Error())
 		return permission, user, fmt.Errorf("error while getting costumes ")
 	}
+
 	log.Debugf("permission for %s found %s", apikey, permission)
+
 	return permission, user, err
 }
 
@@ -169,7 +203,10 @@ func (ds *DatabaseStorage) GetMaterial(mID int) (m model.Material, err error) {
 		log.Errorf("error while gettings costumes: %s", err.Error())
 		return m, fmt.Errorf("error while getting costumes ")
 	}
+
 	m.MaterialType = mt
+
 	log.Infof("material found %+v", m)
+
 	return m, err
 }

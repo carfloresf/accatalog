@@ -12,6 +12,7 @@ func NewService(storage storage.Storage) Service {
 	service := Service{
 		Storage: storage,
 	}
+
 	return service
 }
 
@@ -21,11 +22,11 @@ type Service struct {
 }
 
 // GetFullCostume full costume
-func (s *Service) GetFullCostume(cID int) (c model.Costume, err error) {
+func (s *Service) GetFullCostume(cID int) (c *model.Costume, err error) {
 	costume, err := s.Storage.GetCostume(cID)
 	if err != nil {
 		log.Printf("error getting costume: %s", err.Error())
-		return costume, err
+		return nil, err
 	}
 
 	cms, err := s.Storage.GetCostumeMaterial(cID)
@@ -34,16 +35,20 @@ func (s *Service) GetFullCostume(cID int) (c model.Costume, err error) {
 	}
 
 	var cmrs []model.CostumeMaterialResponse
+
 	for _, material := range cms {
 		var cmr model.CostumeMaterialResponse
+
 		cms, err := s.Storage.GetMaterial(material.MaterialID)
 		if err != nil {
 			return costume, err
 		}
+
 		cmr.Material = cms
 		cmr.Quantity = material.Quantity
 		cmrs = append(cmrs, cmr)
 	}
+
 	costume.CostumeMaterial = cmrs
 
 	return costume, err
@@ -59,7 +64,7 @@ func (s *Service) GetAllCostumes() (cs []model.Costume, err error) {
 
 	for i, costume := range costumes {
 		fullCm, _ := s.GetFullCostume(costume.CostumeID)
-		costumes[i] = fullCm
+		costumes[i] = *fullCm
 	}
 
 	return costumes, err
