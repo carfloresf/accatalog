@@ -1,13 +1,20 @@
 os: linux
 language: go
 go:
-  - '1.13.1'
+  - "1.14rc1"
+  - "1.13.x"
 branches:
   only:
     - master
-install:
-  - echo "Install will do nothing"
+env:
+  global:
+    - GOLANGCILINT_VERSION='v1.23.6'
+before-install:
+  - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin ${GOLANGCILINT_VERSION}
 script:
-  - GOOS=linux GOARCH=amd64 make test
-after_success: reports-publisher
-after_failure: reports-publisher
+  - $GOPATH/bin/golangci-lint run
+  - GOOS=linux GOARCH=amd64 make build test
+after_failure:
+  - bash <(curl -s https://codecov.io/bash)
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

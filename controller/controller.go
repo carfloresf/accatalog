@@ -121,15 +121,19 @@ func (c *Controller) createCostumeMaterialRelation(ctx *fasthttp.RequestCtx) {
 
 func (c *Controller) getCostume(ctx *fasthttp.RequestCtx) {
 	costumeIDParam := ctx.UserValue("costume_id").(string)
+
 	costumeID, err := strconv.Atoi(costumeIDParam)
 	if err != nil {
 		respond(ctx, fasthttp.StatusInternalServerError, fmt.Sprintf(`{"error":"%s"}`, err))
 		return
 	}
+
 	cm, err := c.Service.GetFullCostume(costumeID)
 	if err != nil {
-		respond(ctx, fasthttp.StatusInternalServerError, fmt.Sprintf(`{"error":"%s"}`, err))
-		return
+		if err.Error() == "empty result" {
+			respond(ctx, fasthttp.StatusNotFound, fmt.Sprintf(`{"error":"%s"}`, err))
+			return
+		}
 	}
 
 	respondInterface(ctx, http.StatusCreated, cm)

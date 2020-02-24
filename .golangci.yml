@@ -1,6 +1,35 @@
 linters:
-  enable-all: true
-  disable:
-    - scopelint
+  enable:
+    - bodyclose
+    - dogsled
+    - dupl
+    - funlen
     - gochecknoglobals
-    - prealloc
+    - gochecknoinits
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - gofmt
+    - goimports
+    - golint
+    - gosec
+    - lll
+    - maligned
+    - misspell
+    - nakedret
+    - scopelint
+    - unconvert
+    - whitespace
+    - wsl
+linters-settings:
+  lll:
+    line-length: 150
+  funlen:
+    lines: 90
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - funlen
+        - maligned

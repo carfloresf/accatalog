@@ -6,3 +6,9 @@ tmp/
 .directory/
 
 .DS_Store
+
+profile.out
+
+build/ac-front
+
+coverage.txt

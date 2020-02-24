@@ -17,7 +17,7 @@ type Storage interface {
 	InsertMaterial(m model.Material) (int, error)
 	InsertCostumeMaterialRelation(cm model.CostumeMaterialRelation) (err error)
 	InsertMaterialType(cm model.MaterialType) (int, error)
-	GetCostume(cID int) (c model.Costume, err error)
+	GetCostume(cID int) (c *model.Costume, err error)
 	GetAllCostumes() (cs []model.Costume, err error)
 	GetMaterial(mID int) (c model.Material, err error)
 	GetCostumeMaterial(cID int) (cm []model.CostumeMaterialRelation, err error)
@@ -29,5 +29,6 @@ func NewStorage(connectionString string) Storage {
 	storage := DatabaseStorage{
 		db: connect(connectionString),
 	}
+
 	return &storage
 }

@@ -18,7 +18,9 @@ func respond(ctx *fasthttp.RequestCtx, code int, payload string) {
 func respondInterface(ctx *fasthttp.RequestCtx, code int, payload interface{}) {
 	ctx.SetStatusCode(code)
 	ctx.SetContentType("application/json; charset=utf-8")
+
 	response, _ := json.Marshal(payload)
+
 	ctx.SetBodyString(string(response))
 }
 
