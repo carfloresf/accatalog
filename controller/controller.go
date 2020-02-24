@@ -30,6 +30,7 @@ func (c *Controller) InitializeRoutes() {
 
 	c.Router.GET("/healthcheck", c.healthcheck)
 	c.Router.POST("/materials", c.basicAuth(c.createMaterial))
+	c.Router.GET("/materials", c.basicAuth(c.getAllMaterials))
 	c.Router.POST("/costumes", c.basicAuth(c.createCostume))
 	c.Router.GET("/costumes/:costume_id", c.basicAuth(c.getCostume))
 	c.Router.GET("/costumes", c.basicAuth(c.getAllCostumes))
@@ -147,4 +148,14 @@ func (c *Controller) getAllCostumes(ctx *fasthttp.RequestCtx) {
 	}
 
 	respondInterface(ctx, http.StatusCreated, cs)
+}
+
+func (c *Controller) getAllMaterials(ctx *fasthttp.RequestCtx) {
+	ms, err := c.Service.GetAllMaterials()
+	if err != nil {
+		respond(ctx, fasthttp.StatusInternalServerError, fmt.Sprintf(`{"error":"%s"}`, err))
+		return
+	}
+
+	respondInterface(ctx, http.StatusOK, ms)
 }

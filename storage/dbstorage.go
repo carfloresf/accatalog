@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/jmoiron/sqlx"
+	// postgres package
+	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/hellerox/AcCatalog/model"
@@ -36,7 +38,7 @@ func (ds *DatabaseStorage) InsertCostume(c model.Costume) (int, error) {
 }
 
 // InsertMaterial for ACCAT
-func (ds *DatabaseStorage) InsertMaterial(m model.Material) (int, error) {
+func (ds *DatabaseStorage) InsertMaterial(m model.Material) (int64, error) {
 	err := ds.db.QueryRow(
 		`INSERT INTO material (description, cost, measure, material_type_id, brand_id)
 			SELECT CAST($1 AS VARCHAR), $2, $3, $4, $5
@@ -200,7 +202,7 @@ func (ds *DatabaseStorage) GetMaterial(mID int) (m model.Material, err error) {
 		FROM material m JOIN material_type mt USING (material_type_id) 
 		WHERE m.material_id = $1`, mID).
 		Scan(&m.MaterialID, &m.Description, &m.Cost, &mt.MaterialTypeID, &m.BrandID, &m.CreatedAt, &m.Active, &mt.Name); err != nil {
-		log.Errorf("error while gettings costumes: %s", err.Error())
+		log.Errorf("error while getting costumes: %s", err.Error())
 		return m, fmt.Errorf("error while getting costumes ")
 	}
 
@@ -209,4 +211,22 @@ func (ds *DatabaseStorage) GetMaterial(mID int) (m model.Material, err error) {
 	log.Infof("material found %+v", m)
 
 	return m, err
+}
+
+// GetMaterial for ACCAT
+func (ds *DatabaseStorage) GetAllMaterials() (ms []model.Material, err error) {
+	rows, err := ds.db.Queryx("SELECT * FROM material")
+
+	material := model.Material{}
+
+	for rows.Next() {
+		err := rows.StructScan(&material)
+		if err != nil {
+			log.Errorln(err)
+		}
+
+		ms = append(ms, material)
+	}
+
+	return ms, err
 }

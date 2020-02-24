@@ -69,3 +69,14 @@ func (s *Service) GetAllCostumes() (cs []model.Costume, err error) {
 
 	return costumes, err
 }
+
+// GetAllCostumes all the costumes
+func (s *Service) GetAllMaterials() (ms []model.Material, err error) {
+	materials, err := s.Storage.GetAllMaterials()
+	if err != nil {
+		log.Printf("error getting costume: %s", err.Error())
+		return materials, err
+	}
+
+	return materials, err
+}

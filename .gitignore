@@ -12,3 +12,5 @@ profile.out
 build/ac-front
 
 coverage.txt
+
+build/ac-catalog
