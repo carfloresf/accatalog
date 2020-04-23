@@ -4,7 +4,7 @@ import "time"
 
 // Material contains info about the materials used in AC
 type Material struct {
-	MaterialID   int64     `db:"material_id" json:"materialID,omitempty"`
+	MaterialID   int64     `json:"materialID,omitempty" db:"material_id"`
 	Description  string    `json:"description,omitempty" db:"description"`
 	Cost         float64   `json:"cost,omitempty" db:"cost"`
 	Measure      string    `json:"measure,omitempty" db:"measure"`

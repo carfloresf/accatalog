@@ -1,31 +1,21 @@
 package service
 
 import (
-	"log"
-
 	"github.com/hellerox/AcCatalog/model"
 	"github.com/hellerox/AcCatalog/storage"
+	log "github.com/sirupsen/logrus"
 )
 
-// NewService returns a new DatabaseOperator
-func NewService(storage storage.Storage) Service {
-	service := Service{
-		Storage: storage,
-	}
-
-	return service
-}
-
-// Service controller
-type Service struct {
+// AcCatalogService controller
+type AcCatalogService struct {
 	Storage storage.Storage
 }
 
 // GetFullCostume full costume
-func (s *Service) GetFullCostume(cID int) (c *model.Costume, err error) {
+func (s *AcCatalogService) GetFullCostume(cID int) (c *model.Costume, err error) {
 	costume, err := s.Storage.GetCostume(cID)
 	if err != nil {
-		log.Printf("error getting costume: %s", err.Error())
+		log.Errorf("error getting costume: %+v", err)
 		return nil, err
 	}
 
@@ -55,10 +45,10 @@ func (s *Service) GetFullCostume(cID int) (c *model.Costume, err error) {
 }
 
 // GetAllCostumes all the costumes
-func (s *Service) GetAllCostumes() (cs []model.Costume, err error) {
+func (s *AcCatalogService) GetAllCostumes() (cs []model.Costume, err error) {
 	costumes, err := s.Storage.GetAllCostumes()
 	if err != nil {
-		log.Printf("error getting costume: %s", err.Error())
+		log.Errorf("error getting costume: %+v", err)
 		return cs, err
 	}
 
@@ -70,13 +60,24 @@ func (s *Service) GetAllCostumes() (cs []model.Costume, err error) {
 	return costumes, err
 }
 
-// GetAllCostumes all the costumes
-func (s *Service) GetAllMaterials() (ms []model.Material, err error) {
+// GetAllMaterials all the materials
+func (s *AcCatalogService) GetAllMaterials() (ms []model.Material, err error) {
 	materials, err := s.Storage.GetAllMaterials()
 	if err != nil {
-		log.Printf("error getting costume: %s", err.Error())
+		log.Errorf("error getting costume: %+v", err)
 		return materials, err
 	}
 
 	return materials, err
+}
+
+// GetAllMaterials all the materials
+func (s *AcCatalogService) CreateMaterial(m model.Material) (mID int64, err error) {
+	materialID, err := s.Storage.InsertMaterial(m)
+	if err != nil {
+		log.Errorf("error getting costume: %+v", err)
+		return materialID, err
+	}
+
+	return materialID, err
 }

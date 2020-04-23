@@ -1,20 +1,22 @@
-package main
-
+package main // Package main implements the go-service command.
 import (
+	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/hellerox/AcCatalog/storage"
 
-	"github.com/hellerox/AcCatalog/api"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cast"
+
+	"github.com/hellerox/AcCatalog/pkg/handlers/rest"
+	"github.com/hellerox/AcCatalog/pkg/service"
 )
 
-var exit = make(chan os.Signal, 1) // nolint: gochecknoglobals
-
 func main() {
-	a := api.App{}
-
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -25,23 +27,52 @@ func main() {
 		connectionString = "user=acadmin dbname=accat sslmode=disable"
 	}
 
-	log.Infof("setting connectionString: %s", connectionString)
+	// register healthcheck handler
+	healthcheckHandler := http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		},
+	)
 
-	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
+	http.Handle("/healthcheck", healthcheckHandler)
 
-	err := a.Initialize(connectionString, port)
-	if err != nil {
-		log.Fatalf(err.Error())
+	// initialize service
+	service := service.AcCatalogService{Storage: storage.NewStorage(connectionString)}
+
+	// initialize handlers
+	handler := rest.MakeHTTPHandlers(&service)
+	http.Handle("/", handler)
+
+	// run http service & wait
+	runService(cast.ToInt(port))
+}
+
+func runService(port int) {
+	// init server
+	server := &http.Server{
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		Addr:         fmt.Sprintf(":%d", port),
 	}
 
-	for range exit {
-		log.Info("Stopping server...")
+	errc := make(chan error, 2)
 
-		err := a.Stop()
-		if err != nil {
-			log.Fatalf("Error stopping the server: %s", err)
-		}
+	go func() {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGINT)
+		errc <- fmt.Errorf("%s", <-c)
+	}()
 
-		os.Exit(0)
-	}
+	go func() {
+		logrus.WithField("port", port).Info("listening")
+		errc <- server.ListenAndServe()
+	}()
+
+	logrus.WithFields(logrus.Fields{
+		"port": port,
+	}).Info("accat initialized...")
+
+	logrus.WithFields(logrus.Fields{
+		"reason": <-errc,
+	}).Info("terminated")
 }

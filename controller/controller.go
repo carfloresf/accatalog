@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
+	service2 "github.com/hellerox/AcCatalog/pkg/service"
+
 	"github.com/buaazp/fasthttprouter"
 	"github.com/hellerox/AcCatalog/model"
-	"github.com/hellerox/AcCatalog/service"
 	"github.com/hellerox/AcCatalog/storage"
 	log "github.com/sirupsen/logrus"
 	"github.com/valyala/fasthttp"
@@ -18,7 +19,7 @@ import (
 type Controller struct {
 	Router  *fasthttprouter.Router
 	Storage storage.Storage
-	Service service.Service
+	Service service2.AcCatalogService
 }
 
 // InitializeRoutes route initialize
