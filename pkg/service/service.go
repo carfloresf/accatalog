@@ -71,13 +71,24 @@ func (s *AcCatalogService) GetAllMaterials() (ms []model.Material, err error) {
 	return materials, err
 }
 
-// GetAllMaterials all the materials
+// CreateMaterial create material
 func (s *AcCatalogService) CreateMaterial(m model.Material) (mID int64, err error) {
-	materialID, err := s.Storage.InsertMaterial(m)
+	mID, err = s.Storage.InsertMaterial(m)
 	if err != nil {
-		log.Errorf("error getting costume: %+v", err)
-		return materialID, err
+		log.Errorf("error creating material: %+v", err)
+		return mID, err
 	}
 
-	return materialID, err
+	return mID, err
+}
+
+// CreateCostume create costume
+func (s *AcCatalogService) CreateCostume(c model.Costume) (cID int, err error) {
+	cID, err = s.Storage.InsertCostume(c)
+	if err != nil {
+		log.Errorf("error creating costume: %+v", err)
+		return
+	}
+
+	return cID, err
 }

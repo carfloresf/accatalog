@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 
 	"github.com/spf13/cast"
@@ -95,9 +96,11 @@ type createMaterialResponse struct {
 }
 
 func decodeCreateMaterialRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	req := createMaterialRequest{Material: model.Material{}}
-
-	return req, nil
+	var request createMaterialRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
+	}
+	return request, nil
 }
 
 func makeCreateMaterial(s Service) endpoint.Endpoint {
@@ -108,5 +111,32 @@ func makeCreateMaterial(s Service) endpoint.Endpoint {
 		}
 
 		return createMaterialResponse{MaterialID: mID}, nil
+	}
+}
+
+type createCostumeRequest struct {
+	Costume model.Costume `json:"costume"`
+}
+
+type createCostumeResponse struct {
+	CostumeID int `json:"costumeID"`
+}
+
+func decodeCreateCostumeRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	var request createCostumeRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
+	}
+	return request, nil
+}
+
+func makeCreateCostume(s Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		cID, err := s.CreateCostume(request.(createCostumeRequest).Costume)
+		if err != nil {
+			return errorResponse{error: err}, err
+		}
+
+		return createCostumeResponse{CostumeID: cID}, nil
 	}
 }

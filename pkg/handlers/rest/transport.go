@@ -21,6 +21,7 @@ type Endpoints struct {
 	GetFullCostume          endpoint.Endpoint
 	GetAllCostumes          endpoint.Endpoint
 	CreateMaterial          endpoint.Endpoint
+	CreateCostume           endpoint.Endpoint
 }
 
 type restResponse struct {
@@ -39,6 +40,7 @@ type Service interface {
 	GetFullCostume(cID int) (c *model.Costume, err error)
 	GetAllCostumes() (cs []model.Costume, err error)
 	CreateMaterial(material model.Material) (mID int64, err error)
+	CreateCostume(c model.Costume) (cID int, err error)
 }
 
 // MakeHTTPHandlers makes handlers
@@ -110,6 +112,7 @@ func makeServerEndpoints(s Service) Endpoints {
 		GetFullCostume:          makeGetFullCostume(s),
 		GetAllCostumes:          makeGetAllCostumes(s),
 		CreateMaterial:          makeCreateMaterial(s),
+		CreateCostume:           makeCreateCostume(s),
 	}
 }
 
