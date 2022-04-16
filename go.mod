@@ -4,8 +4,7 @@ go 1.12
 
 require (
 	github.com/buaazp/fasthttprouter v0.1.1
-	github.com/go-sql-driver/mysql v1.5.0 // indirect
-	github.com/jmoiron/sqlx v1.3.4
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
