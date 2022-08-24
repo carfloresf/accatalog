@@ -1,6 +1,6 @@
 module github.com/hellerox/AcCatalog
 
-go 1.12
+go 1.19
 
 require (
 	github.com/buaazp/fasthttprouter v0.1.1
